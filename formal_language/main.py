@@ -1,6 +1,6 @@
 from classes.Automaton import Automaton
 from classes.StackAutomaton import StackAutomaton
-from algorithms import check_determinized, check_complete, completion, check_equivalent, minimaization, possible_word
+from algorithms import check_equivalent, minimaization, possible_word
 
 
 def main():

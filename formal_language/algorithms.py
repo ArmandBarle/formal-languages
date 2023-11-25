@@ -1,10 +1,22 @@
 import re
-
 import numpy as np
-import logging
 from classes.State import State
-from classes.StackAutomaton import StackAutomaton
-from classes.StackTransition import StackTransition
+import logging
+
+# create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+debug_console_handler = logging.StreamHandler()
+debug_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s - %(lineno)d')
+debug_console_handler.setFormatter(debug_formatter)
+
+info_console_handler = logging.StreamHandler()
+info_formatter = logging.Formatter('%(levelname)s: %(message)s')
+info_console_handler.setFormatter(info_formatter)
+
+logger.addHandler(debug_console_handler)
+logger.addHandler(info_console_handler)
 
 
 def check_determinized(automaton):
@@ -182,7 +194,7 @@ def letter_available(state, letter):
         if letter in transition.letter:
             return transition
 
-    logging.error("Letter {} not available from state {}".format(letter, state.state_name))
+    logger.debug("Letter {} not available from state {}".format(letter, state.state_name))
     return False
 
 
@@ -191,10 +203,11 @@ def stack_operation(automaton, transition):
         stack_out = re.findall(r'[a-zA-Z]+\d+', transition.stack_out)
         try:
             for elem in stack_out:
+                stack = automaton.stack
                 removed = automaton.stack.pop()
                 if elem != removed:
-                    logging.error(
-                        "not able to remove {} from stack {} cause {} != {}".format(elem, automaton.stack, elem,
+                    logger.debug(
+                        "not able to remove {} from stack {} cause {} != {}".format(elem, stack, elem,
                                                                                     removed))
                     return False
         except IndexError as e:
@@ -220,16 +233,17 @@ def possible_word(stack_automaton, word):
 
     # check if the automata can go along letter by letter
     while word:
+        logger.info("stack: {}".format(stack_automaton.stack))
         # go letter by letter
         letter = word.pop(0)
         transition = letter_available(current_state, letter)
         # check if a transition with that letter exists
         if not transition:
-            logging.error("transition: {}".format(transition))
+            logger.debug("transition: {}".format(transition))
             return False
         # check if the stack operation of the transition is doable
         if not stack_operation(stack_automaton, transition):
-            logging.error("operation: {}".format(transition))
+            logger.debug("operation: {}".format(transition))
             return False
 
         # go to the next state
@@ -242,6 +256,7 @@ def possible_word(stack_automaton, word):
 
     # or if you can reach it final state using epsilon transitions
     while True:
+        logger.info("stack: {}".format(stack_automaton.stack))
         # same as above but only with epsilon transitions
         transition = letter_available(current_state, "E")
         if not transition:
