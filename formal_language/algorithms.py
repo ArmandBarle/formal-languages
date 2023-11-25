@@ -26,7 +26,10 @@ def check_complete(automaton):
     :return: true or false
     """
     for state in automaton.states:
-        if len(state.transitions) != len(automaton.alphabet):
+        count = 0
+        for transition in state.transitions:
+            count += len(transition.letter)
+        if count != len(automaton.alphabet):
             print("not complete")
             return False
 
