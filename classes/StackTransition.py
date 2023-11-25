@@ -8,4 +8,4 @@ class StackTransition(Transition):
         self.stack_in = stack_in
 
     def __str__(self):
-        return f"({self.letter[0]},{self.stack_out}/{self.stack_in}) -> {self.to_state.state_name} "
+        return f"({self.letter[0]},{self.stack_out}/{self.stack_in}) -> {self.target_state.state_name} "

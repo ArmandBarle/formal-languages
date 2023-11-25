@@ -1,12 +1,16 @@
-import formal_language.algorithms as falgs
 from classes.Automaton import Automaton
-from classes.State import State
-from classes.Transition import Transition
-from algorithms import check_determinized, check_complete, completion, check_equivalent, minimaization
+from classes.StackAutomaton import StackAutomaton
+from algorithms import check_determinized, check_complete, completion, check_equivalent, minimaization, possible_word
 
 
 def main():
-    test_hazi1()
+    test_stack_automaton()
+
+
+def test_stack_automaton():
+    stack_automaton = StackAutomaton("input_automata/stack_automaton.txt")
+    print(stack_automaton)
+    print(possible_word(stack_automaton, "aabb"))
 
 
 def main_test():

@@ -26,7 +26,7 @@ class StackAutomaton(Automaton):
             self.initial_state = file.readline().strip()
 
             # reading initial stack value (line 5)
-            self.stack = file.readline().strip()
+            self.stack = [file.readline().strip()]
 
             # reading final states (line 6)
             self.final_states = set(file.readline().split())
@@ -53,3 +53,5 @@ class StackAutomaton(Automaton):
                                     self.get_state(current_transition[4]))  # target_state
                 )
 
+    def get_state(self, state_name):
+        return super(StackAutomaton, self).get_state(state_name)

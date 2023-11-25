@@ -1,7 +1,10 @@
-import numpy as np
+import re
 
-from classes.Automaton import Automaton
+import numpy as np
+import logging
 from classes.State import State
+from classes.StackAutomaton import StackAutomaton
+from classes.StackTransition import StackTransition
 
 
 def check_determinized(automaton):
@@ -172,6 +175,85 @@ def minimaization(automaton):
 
 def epsilon_closure(automaton):
     pass
+
+
+def letter_available(state, letter):
+    for transition in state.transitions:
+        if letter in transition.letter:
+            return transition
+
+    logging.error("Letter {} not available from state {}".format(letter, state.state_name))
+    return False
+
+
+def stack_operation(automaton, transition):
+    if transition.stack_out[0] != "E":
+        stack_out = re.findall(r'[a-zA-Z]+\d+', transition.stack_out)
+        try:
+            for elem in stack_out:
+                removed = automaton.stack.pop()
+                if elem != removed:
+                    logging.error(
+                        "not able to remove {} from stack {} cause {} != {}".format(elem, automaton.stack, elem,
+                                                                                    removed))
+                    return False
+        except IndexError as e:
+            logging.error("Stack underflow", str(e))
+            return False
+
+    if transition.stack_in[0] == "E":
+        return True
+    else:
+        stack_in = re.findall(r'[a-zA-Z]+\d+', transition.stack_in)
+
+    for elem in stack_in:
+        automaton.stack.append(elem)
+
+    return True
+
+
+def possible_word(stack_automaton, word):
+    word = list((word))
+
+    # start at the initial state
+    current_state = stack_automaton.initial_state
+
+    # check if the automata can go along letter by letter
+    while word:
+        # go letter by letter
+        letter = word.pop(0)
+        transition = letter_available(current_state, letter)
+        # check if a transition with that letter exists
+        if not transition:
+            logging.error("transition: {}".format(transition))
+            return False
+        # check if the stack operation of the transition is doable
+        if not stack_operation(stack_automaton, transition):
+            logging.error("operation: {}".format(transition))
+            return False
+
+        # go to the next state
+        current_state = transition.target_state
+
+    # this should be the end of the word
+    # check if you are in a final state and the stack is empty
+    if current_state.is_final and len(stack_automaton.stack) == 0:
+        return True
+
+    # or if you can reach it final state using epsilon transitions
+    while True:
+        # same as above but only with epsilon transitions
+        transition = letter_available(current_state, "E")
+        if not transition:
+            break
+        if not stack_operation(stack_automaton, transition):
+            break
+        current_state = transition.target_state
+
+    # final check if you are in a final state and stack is empty
+    if current_state.is_final and len(stack_automaton.stack) == 0:
+        return True
+    return False
 
 
 if __name__ == '__main__':
