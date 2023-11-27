@@ -1,40 +1,34 @@
-import formal.main
+from classes.Automaton import Automaton
 
 
-def in_transition(to_state, from_state):
+def in_transition(target_state, from_state):
     """
-    checks if the to_state is in  from_state's transitions
-    :param to_state: state where transition goes to
+    checks if the target_state is in  from_state's transitions
+    :param target_state: state where transition goes to
     :param from_state: state where transition goes from
-    :return: boolean if to_state is in from_state transitions
+    :return: boolean if target_state is in from_state transitions
     """
-    for transition in from_state.transitions.keys():
-        if to_state in from_state.transitions[transition]:
+    for transition in from_state.transitions:
+        if target_state.state_name == transition.target_state.state_name:
             return True
     return False
 
 
-def blend_transition(automaton):
+def blend_transition(state):
     """
     blends transitions that go to the same state with different letters
-    :param automaton: automaton of which states are going to be blended
-    :return: automaton with blended states
+    :param state: state of which states are going to be blended
+    :return: state with blended states
     """
-    for state in automaton.states:
-        for transition_letter in state.transitions.keys():
-            new_transtitions = []
-            found_transitions = False
-            for transition_letter2 in state.transitions.keys():
-                if transition_letter == transition_letter2:
-                    continue
-                if state.transitions[transition_letter] == state.transitions[transition_letter2]:
-                    found_transitions = True
-                    state.transitions.pop(transition_letter2)
-                    new_transtitions.append(transition_letter)
-            if found_transitions:
-                state.add_transition(tuple(new_transtitions), state.state_name)
+    same_transitions = []
+    for i, transition1 in enumerate(state.transitions[:-1]):
+        for transition2 in state.transitions[i + 1:]:
+            if transition1.target_state.state_name == transition2.target_state.state_name:
+                same_transitions.append((transition1, transition2))
 
-    return automaton
+    for transition in same_transitions:
+        state.remove_transition(transition[1])
+        state.get_transition(transition[0]).add_letter(transition[1].letter[0])
 
 
 def draw_states_multiline(automaton):
@@ -170,33 +164,45 @@ def draw_states_circular(automaton):
 
 def draw_transitions(automaton):
     with open("tikz_out.txt", 'a+') as fout:
+        # initialize path
         fout.write("\t\\path[->]\n")
+
+        # loop through all states and write them in chunks
         for i, state in enumerate(automaton.states):
+            # first write state's name
             fout.write("\t(" + state.state_name + ")")
-            for letter in automaton.alphabet:
-                if letter not in state.transitions.keys():
-                    continue
-                for next_state in state.transitions[letter]:
 
-                    # check for double letter edges
-                    # TODO
+            # puts together letters that use the same edge (used later)
+            blend_transition(state)
 
-                    # checks for loops
-                    if next_state == state:
-                        if i < len(automaton.states) / 2:
-                            fout.write("\t edge[loop above] node {" + letter + "} (" + next_state.state_name + ")\n")
-                            continue
-                        else:
-                            fout.write("\t edge[loop below] node {" + letter + "} (" + next_state.state_name + ")\n")
-                            continue
-
-                    # check for bends
-                    if in_transition(state, next_state):
-                        fout.write("\t edge[bend right] node {" + letter + "} (" + next_state.state_name + ")\n")
+            for transition in state.transitions:
+                # checks for loops
+                if transition.target_state == state:
+                    # checks to write the loop above or below, depending on whether its in the top or bottom row
+                    if i < len(automaton.states) / 2:
+                        fout.write(
+                            "\t edge[loop above] node "
+                            "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                            "(" + transition.target_state.state_name + ")\n")
+                        continue
+                    else:
+                        fout.write(
+                            "\t edge[loop below] node "
+                            "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                            "(" + transition.target_state.state_name + ")\n")
                         continue
 
-                    # normal transitions
-                    fout.write("\t edge node {" + letter + "} (" + next_state.state_name + ")\n")
+                # check for bends
+                if in_transition(state, transition.target_state):
+                    fout.write(
+                        "\t edge[bend right] node "
+                        "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                        "(" + transition.target_state.state_name + ")\n")
+                    continue
+                # normal transitions
+                fout.write("\t edge node "
+                           "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                           "(" + transition.target_state.state_name + ")\n")
 
         fout.write("\n\n\n\n")
         # end of tikz
@@ -206,57 +212,58 @@ def draw_transitions(automaton):
 def draw_transitions_straight_line(automaton):
     with open("tikz_out.txt", 'a+') as fout:
         fout.write("\t\\path[->]\n")
+
+        # loop through all states and write them in chunks
         for i, state in enumerate(automaton.states):
+            # first write state's name
             fout.write("\t(" + state.state_name + ")")
-            for letter in automaton.alphabet:
-                if letter not in state.transitions.keys():
+
+            # puts together letters that use the same edge (used later)
+            blend_transition(state)
+
+            for transition in state.transitions:
+                # checks for loops
+                if transition.target_state == state:
+                    # checks to write the loop above or below, depending on whether its in the top or bottom row
+                    if i < len(automaton.states) / 2:
+                        fout.write(
+                            "\t edge[loop above] node "
+                            "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                            "(" + transition.target_state.state_name + ")\n")
+                        continue
+                    else:
+                        fout.write(
+                            "\t edge[loop below] node "
+                            "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                            "(" + transition.target_state.state_name + ")\n")
+                        continue
+
+                # check for bends
+                if in_transition(state, transition.target_state):
+                    fout.write(
+                        "\t edge[bend right] node "
+                        "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                        "(" + transition.target_state.state_name + ")\n")
                     continue
-                for next_state in state.transitions[letter]:
+                # check for neighbours
+                if automaton.states.index(state) == automaton.states.index(transition.target_state) - 1 \
+                        or automaton.states.index(state) == automaton.states.index(transition.target_state) + 1:
+                    fout.write("\t edge node " +
+                               "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                               "(" + transition.target_state.state_name + ")\n")
+                    continue
 
-                    # check for double letter edges
-                    # TODO
-
-                    # checks for loops
-                    if next_state == state:
-                        if i < len(automaton.states) / 2:
-                            fout.write("\t edge[loop above] node {" + letter + "} (" + next_state.state_name + ")\n")
-                            continue
-                        else:
-                            fout.write("\t edge[loop below] node {" + letter + "} (" + next_state.state_name + ")\n")
-                            continue
-
-                    # check for bends
-                    if in_transition(state, next_state):
-                        fout.write("\t edge[bend right] node {" + letter + "} (" + next_state.state_name + ")\n")
-                        continue
-
-                    # check for neighbour
-                    if automaton.states.index(state) == automaton.states.index(next_state) - 1 \
-                            or automaton.states.index(state) == automaton.states.index(next_state) + 1:
-                        fout.write("\t edge node {" + letter + "} (" + next_state.state_name + ")\n")
-                        continue
-
-                    fout.write("\t edge[bend right] node {" + letter + "} (" + next_state.state_name + ")\n")
+                # normal transitions
+                fout.write("\t edge[bend right] node "
+                           "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
+                           "(" + transition.target_state.state_name + ")\n")
 
         fout.write("\n\n\n\n")
         # end of tikz
         fout.write("\\end{tikzpicture}")
 
 
-def set_up_transitions(file_name):
-    with open(file_name, 'r') as fin:
-        for i in range(4):
-            fin.readline()
-        line = fin.readline()
-
-        transitions = []
-        while True:
-            if line == "":
-                break
-            line = fin.readline()
-
-
 if __name__ == '__main__':
-    automaton = formal.main.read_automata("tikz_hazi3")
-    automaton = blend_transition(automaton)
-    print(automaton)
+    automaton = Automaton("tikz_hazi3")
+    draw_states_single_line(automaton)
+    draw_transitions_straight_line(automaton)
