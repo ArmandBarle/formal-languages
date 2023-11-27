@@ -15,7 +15,7 @@ info_console_handler = logging.StreamHandler()
 info_formatter = logging.Formatter('%(levelname)s: %(message)s')
 info_console_handler.setFormatter(info_formatter)
 
-logger.addHandler(debug_console_handler)
+# logger.addHandler(debug_console_handler)
 logger.addHandler(info_console_handler)
 
 
@@ -190,6 +190,12 @@ def epsilon_closure(automaton):
 
 
 def letter_available(state, letter):
+    """
+    checks if the transition with the letter is available in the state
+    :param state: checked state
+    :param letter: checked transition letter
+    :return: True if the transition is available
+    """
     for transition in state.transitions:
         if letter in transition.letter:
             return transition
@@ -225,8 +231,9 @@ def stack_operation(automaton, transition):
     return True
 
 
+# noinspection PyTypeChecker
 def possible_word(stack_automaton, word):
-    word = list((word))
+    word = list(word)
 
     # start at the initial state
     current_state = stack_automaton.initial_state
