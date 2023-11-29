@@ -7,7 +7,7 @@ class CircularTikz(Tikz):
     def __init__(self, filename):
         super().__init__(filename)
 
-    def draw_states_circular(self, rho=10):
+    def draw_states(self, rho=5):
         """
         draws states of the automaton in a circular shape
         rho = radius
@@ -44,8 +44,9 @@ class CircularTikz(Tikz):
                 line += "] (" + state.state_name + ") at " + str(coords[i]) + " {$" + state.state_name + "$};\n\n\n"
                 fout.write(line)
 
-    def draw_transitions_circular(self):
+    def draw_transitions(self):
         with open("tikz_out.txt", 'a+') as fout:
+
             # initialize path
             fout.write("\t\\path[->]\n")
 

@@ -4,46 +4,35 @@
 \node[state,initial] (q0) at (-5.0, -0.0) {$q0$};
 
 
-\node[state] (q1) at (-4.045084971874737, -2.938926261462366) {$q1$};
+\node[state] (q1) at (-2.5000000000000004, -4.330127018922193) {$q1$};
 
 
-\node[state] (q2) at (-1.5450849718747373, -4.755282581475767) {$q2$};
+\node[state,accepting] (q2) at (2.499999999999999, -4.330127018922194) {$q2$};
 
 
-\node[state] (q3) at (1.5450849718747368, -4.755282581475768) {$q3$};
+\node[state] (q3) at (5.0, -6.123233995736766e-16) {$q3$};
 
 
-\node[state,accepting] (q4) at (4.045084971874736, -2.9389262614623664) {$q4$};
+\node[state] (q4) at (2.500000000000002, 4.330127018922193) {$q4$};
 
 
-\node[state] (q5) at (5.0, -6.123233995736766e-16) {$q5$};
-
-
-\node[state] (q6) at (4.045084971874737, 2.938926261462365) {$q6$};
-
-
-\node[state] (q7) at (1.5450849718747377, 4.755282581475767) {$q7$};
-
-
-\node[state] (q8) at (-1.5450849718747361, 4.755282581475768) {$q8$};
-
-
-\node[state] (q10) at (-4.045084971874736, 2.938926261462367) {$q10$};
+\node[state] (q5) at (-2.5000000000000004, 4.330127018922193) {$q5$};
 
 
 	\path[->]
-	(q0)	 edge node {a} (q1)
-	 edge node {a} (q5)
-	(q1)	 edge node {a} (q2)
-	 edge[loop above] node {b} (q1)
-	 edge node {b} (q8)
-	(q2)	 edge[loop above] node {b} (q2)
-	 edge node {c} (q3)
-	 edge node {c} (q5)
-	(q3)	 edge node {d} (q4)
-	(q4)	(q5)	 edge[loop below] node {a, b} (q5)
-	 edge node {b} (q4)
-	(q6)	(q7)	(q8)	(q10)
+	(q0)	 edge node {0} (q1)
+	 edge node {1} (q4)
+	(q1)	 edge node {0} (q4)
+	 edge node {1} (q2)
+	(q2)	 edge node {0} (q0)
+	 edge[loop above] node {1} (q2)
+	(q3)	 edge node {0} (q5)
+	 edge[bend right] node {1} (q4)
+	(q4)	 edge[loop below] node {0} (q4)
+	 edge[bend right] node {1} (q3)
+	(q5)	 edge node {0} (q4)
+	 edge node {1} (q2)
+;
 
 
 

@@ -4,7 +4,7 @@ from algorithms import check_equivalent, minimaization, possible_word
 
 
 def main():
-    test_stack_automaton()
+    test_hazi1()
 
 
 def test_stack_automaton():

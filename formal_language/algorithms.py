@@ -137,9 +137,9 @@ def minimaization(automaton):
 
         # check every state combination whether they are not equivalent
         for states in good_states:
-            for letter in automaton.alphabet:
-                current_states1 = [states[0].transitions[letter][0], states[1].transitions[letter][0]]
-                current_states2 = [states[1].transitions[letter][0], states[0].transitions[letter][0]]
+            for i in range(len(automaton.alphabet)):
+                current_states1 = [states[0].transitions[i].target_state, states[1].transitions[i].target_state]
+                current_states2 = [states[1].transitions[i].target_state, states[0].transitions[i].target_state]
 
                 if current_states1 in bad_states or current_states2 in bad_states:
                     if [states[0], states[1]] not in bad_states:
@@ -148,6 +148,7 @@ def minimaization(automaton):
                         bad_states.append([states[1], states[0]])
 
         # remove bad states
+        print(good_states)
         for states in good_states:
             if states in bad_states:
                 good_states.remove(states)
@@ -170,10 +171,10 @@ def minimaization(automaton):
         # change the transitions from the old states to the new states
         for other_state in automaton.states:
             if other_state.state_name != states[0].state_name or other_state.state_name != states[1].state_name:
-                for letter in automaton.alphabet:
-                    if other_state.transitions[letter][0] == states[0] or other_state.transitions[letter][0] == states[
+                for i in range(len(automaton.alphabet)):
+                    if other_state.transitions[i].target_state == states[0] or other_state.transitions[i].target_state == states[
                         1]:
-                        other_state.transitions[letter] = [new_state]
+                        other_state.transitions[i].target_state = new_state
 
     # remove old states
     for states in good_states:
