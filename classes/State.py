@@ -47,3 +47,11 @@ class State:
 
     def add_transition(self, other):
         self.transitions.append(other)
+
+    def get_transition(self, transition):
+        for t in self.transitions:
+            if transition.letter == t.letter and transition.target_state == t.target_state:
+                return t
+
+    def remove_transition(self, transition):
+        self.transitions.remove(transition)

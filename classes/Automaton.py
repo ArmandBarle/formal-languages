@@ -44,9 +44,6 @@ class Automaton:
             output += str(state) + "\n"
         return output
 
-    # def __repr__(self):
-    #     return str(self)
-
     def add_state(self, state):
         self.states.append(state)
         if state.is_initial:
