@@ -9,7 +9,7 @@ class LineTikz(Tikz):
         with open("output_automata/" + self.output_file, 'w') as fout:
             # Initialization
             fout.write(
-                "\\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm, scale = 1,transform "
+                "\\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.6cm, scale = 1,transform "
                 "shape]\n\n\n")
 
             # Initializes states
