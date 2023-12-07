@@ -5,7 +5,7 @@ from classes.Transition import Transition
 class Automaton:
     def __init__(self, filename):
         # Reading automaton
-        with open(filename, "r") as file:
+        with open("input_automata/" + filename, "r") as file:
             # reading all states
             self.states = []
             all_states = file.readline().split()

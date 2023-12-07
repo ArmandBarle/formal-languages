@@ -2,11 +2,12 @@ from tikz.Tikz import Tikz
 
 
 class MultilineTikz(Tikz):
-    def __init__(self, filename):
-        super().__init__(filename)
+    def __init__(self, input_file, output_file):
+        super().__init__(input_file, output_file)
 
     def draw_states(self):
-        with open("tikz_out.txt", 'w') as fout:
+        with open("output_automata/" + self.output_file, 'w') as fout:
+
             # Initialization
             fout.write(
                 "\\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm, scale = 1,transform "
@@ -55,7 +56,7 @@ class MultilineTikz(Tikz):
                 previous_state = state
 
     def draw_transitions(self):
-        with open("tikz_out.txt", 'a+') as fout:
+        with open("output_automata/" + self.output_file, 'a+') as fout:
             # initialize path
             fout.write("\t\\path[->]\n")
 

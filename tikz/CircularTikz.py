@@ -16,9 +16,9 @@ def loop_orientation(angle):
 
 
 class CircularTikz(Tikz):
-    def __init__(self, filename):
+    def __init__(self, input_file, output_file):
         self.angles = []
-        super().__init__(filename)
+        super().__init__(input_file, output_file)
 
     def draw_states(self, rho=5):
         """
@@ -32,7 +32,7 @@ class CircularTikz(Tikz):
         if len(self.automaton.states) > 10:
             rho += (len(self.automaton.states) - 10) / 2
 
-        with open("tikz_out.txt", 'w') as fout:
+        with open("output_automata/" + self.output_file, 'w') as fout:
             # Initialization
             fout.write(
                 "\\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm, scale = 1,transform "
@@ -66,7 +66,7 @@ class CircularTikz(Tikz):
 
         :return: a file called tikz_out.txt with the transitions between existing states
         """
-        with open("tikz_out.txt", 'a+') as fout:
+        with open("output_automata/" + self.output_file, 'a+') as fout:
 
             # initialize path
             fout.write("\t\\path[->]\n")
