@@ -2,11 +2,11 @@ from tikz.Tikz import Tikz
 
 
 class LineTikz(Tikz):
-    def __init__(self, filename):
-        super().__init__(filename)
+    def __init__(self, input_file, output_file):
+        super().__init__(input_file, output_file)
 
     def draw_states(self):
-        with open("tikz_out.txt", 'w') as fout:
+        with open("output_automata/" + self.output_file, 'w') as fout:
             # Initialization
             fout.write(
                 "\\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm, scale = 1,transform "
@@ -35,12 +35,12 @@ class LineTikz(Tikz):
                 line += "] (" + state.state_name + ")"
 
                 # end of line if normal states always adds them to the right of the previous state
-                line += "[right of=" + previous_state.state_name + "] {$" + state.state_name + "$};\n\n\n"
+                line += "[right of=" + previous_state.state_name + "] {$" + state.state_name + "$};\n\n"
                 fout.write(line)
                 previous_state = state
 
     def draw_transitions(self):
-        with open("tikz_out.txt", 'a+') as fout:
+        with open("output_automata/" + self.output_file, 'a+') as fout:
             fout.write("\t\\path[->]\n")
 
             # loop through all states and write them in chunks

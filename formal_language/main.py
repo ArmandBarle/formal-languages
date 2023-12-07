@@ -4,13 +4,13 @@ from algorithms import check_equivalent, minimaization, possible_word
 
 
 def main():
-    test_hazi1()
+    test_stack_automaton()
 
 
 def test_stack_automaton():
     stack_automaton = StackAutomaton("input_automata/stack_automaton.txt")
     print(stack_automaton)
-    print(possible_word(stack_automaton, "aabb"))
+    print(possible_word(stack_automaton, "aabba"))
 
 
 def main_test():

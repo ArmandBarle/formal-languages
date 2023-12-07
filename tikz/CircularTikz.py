@@ -3,21 +3,36 @@ import math
 from tikz.Tikz import Tikz
 
 
+def loop_orientation(angle):
+    normalized_angle = angle % (2 * math.pi)
+    if math.pi / 4 < normalized_angle < 3 * math.pi / 4:
+        return "below"
+    elif 3 * math.pi / 4 < normalized_angle < 5 * math.pi / 4:
+        return "right"
+    elif 5 * math.pi / 4 < normalized_angle < 7 * math.pi / 4:
+        return "above"
+    else:
+        return "left"
+
+
 class CircularTikz(Tikz):
-    def __init__(self, filename):
-        super().__init__(filename)
+    def __init__(self, input_file, output_file):
+        self.angles = []
+        super().__init__(input_file, output_file)
 
     def draw_states(self, rho=5):
         """
         draws states of the automaton in a circular shape
-        rho = radius
         alpha = angle is in range [0, 2pi] and divided into as many points there are
         x = rho * cos(alpha)
         y = rho * sin(alpha)
-        :param automaton:
-        :return:
+        :param rho: radius
+        :return: a file called tikz_out.txt with the positioning of the states
         """
-        with open("tikz_out.txt", 'w') as fout:
+        if len(self.automaton.states) > 10:
+            rho += (len(self.automaton.states) - 10) / 2
+
+        with open("output_automata/" + self.output_file, 'w') as fout:
             # Initialization
             fout.write(
                 "\\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm, scale = 1,transform "
@@ -27,6 +42,7 @@ class CircularTikz(Tikz):
             coords = []
             for i, state in enumerate(self.automaton.states):
                 alpha = 2 * math.pi * i / len(self.automaton.states)
+                self.angles.append(alpha)
                 state_x = rho * math.cos(alpha)
                 state_y = rho * math.sin(alpha)
                 coords.append((-state_x, -state_y))
@@ -41,11 +57,16 @@ class CircularTikz(Tikz):
                 if state.is_final:
                     line += ",accepting"
                 # adds the name of the sate then the its coordinates and the state name which is displayed
-                line += "] (" + state.state_name + ") at " + str(coords[i]) + " {$" + state.state_name + "$};\n\n\n"
+                line += "] (" + state.state_name + ") at " + str(coords[i]) + " {$" + state.state_name + "$};\n\n"
                 fout.write(line)
 
     def draw_transitions(self):
-        with open("tikz_out.txt", 'a+') as fout:
+        """
+        draws the transitions of the automaton
+
+        :return: a file called tikz_out.txt with the transitions between existing states
+        """
+        with open("output_automata/" + self.output_file, 'a+') as fout:
 
             # initialize path
             fout.write("\t\\path[->]\n")
@@ -56,24 +77,19 @@ class CircularTikz(Tikz):
                 fout.write("\t(" + state.state_name + ")")
 
                 # puts together letters that use the same edge (used later)
+                # eg.from q0 a and b both go to q1
                 super().blend_transition(state)
 
                 for transition in state.transitions:
-                    # checks for loops
+                    # checks for loops ex. q0 -> q0
                     if transition.target_state == state:
-                        # checks to write the loop above or below, depending on whether its in the top or bottom row
-                        if i < len(self.automaton.states) / 2:
-                            fout.write(
-                                "\t edge[loop above] node "
-                                "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
-                                "(" + transition.target_state.state_name + ")\n")
-                            continue
-                        else:
-                            fout.write(
-                                "\t edge[loop below] node "
-                                "{" + ", ".join(str(letter) for letter in transition.letter) + "} " +
-                                "(" + transition.target_state.state_name + ")\n")
-                            continue
+                        # checks where to write loop depending on the position of the state
+                        # eg. above, below, right, left
+                        fout.write(
+                            "\t edge[loop " + loop_orientation(self.angles[i]) + "] node {" +
+                            ", ".join(str(letter) for letter in transition.letter) + "} " +
+                            "(" + transition.target_state.state_name + ")\n")
+                        continue
 
                     # check for bends
                     if super().in_transition(state, transition.target_state):

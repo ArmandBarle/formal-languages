@@ -2,8 +2,9 @@ from classes.Automaton import Automaton
 
 
 class Tikz:
-    def __init__(self, filename):
-        self.automaton = Automaton(filename)
+    def __init__(self, input_file, output_file):
+        self.automaton = Automaton(input_file)
+        self.output_file = output_file
         self.draw_states()
         self.draw_transitions()
 
