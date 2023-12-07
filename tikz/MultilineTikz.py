@@ -24,7 +24,7 @@ class MultilineTikz(Tikz):
                         line += ",initial"
                     if state.is_final:
                         line += ",accepting"
-                    line += "] (" + state.state_name + ") {$" + state.state_name + "$};\n\n\n"
+                    line += "] (" + state.state_name + ") {$" + state.state_name + "$};\n\n"
                     previous_state = state
                     fout.write(line)
                     continue

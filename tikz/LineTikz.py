@@ -35,7 +35,7 @@ class LineTikz(Tikz):
                 line += "] (" + state.state_name + ")"
 
                 # end of line if normal states always adds them to the right of the previous state
-                line += "[right of=" + previous_state.state_name + "] {$" + state.state_name + "$};\n\n\n"
+                line += "[right of=" + previous_state.state_name + "] {$" + state.state_name + "$};\n\n"
                 fout.write(line)
                 previous_state = state
 

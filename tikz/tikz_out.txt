@@ -1,37 +1,25 @@
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3.5cm, scale = 1,transform shape]
 
 
-\node[state,initial] (q0) at (-5.0, -0.0) {$q0$};
+\node[state,initial] (q0) {$q0$};
+
+\node[state,accepting] (q1)[right of=q0] {$q1$};
 
 
-\node[state] (q1) at (-2.5000000000000004, -4.330127018922193) {$q1$};
+\node[state] (q2)[below of=q0] {$q2$};
 
 
-\node[state,accepting] (q2) at (2.499999999999999, -4.330127018922194) {$q2$};
-
-
-\node[state] (q3) at (5.0, -6.123233995736766e-16) {$q3$};
-
-
-\node[state] (q4) at (2.500000000000002, 4.330127018922193) {$q4$};
-
-
-\node[state] (q5) at (-2.5000000000000004, 4.330127018922193) {$q5$};
+\node[state] (q3)[right of=q2] {$q3$};
 
 
 	\path[->]
-	(q0)	 edge node {0} (q1)
-	 edge node {1} (q4)
-	(q1)	 edge node {0} (q4)
-	 edge node {1} (q2)
-	(q2)	 edge node {0} (q0)
-	 edge[loop above] node {1} (q2)
-	(q3)	 edge node {0} (q5)
-	 edge[bend right] node {1} (q4)
-	(q4)	 edge[loop below] node {0} (q4)
-	 edge[bend right] node {1} (q3)
-	(q5)	 edge node {0} (q4)
-	 edge node {1} (q2)
+	(q0)	 edge node {a} (q2)
+	 edge node {b} (q3)
+	(q1)	 edge node {a} (q3)
+	 edge node {a} (q0)
+	(q2)	 edge node {a} (q1)
+	 edge[loop below] node {b} (q2)
+	(q3)	 edge[loop below] node {a, b} (q3)
 ;
 
 
